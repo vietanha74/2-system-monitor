@@ -23,5 +23,5 @@ string Format::ElapsedTime(long seconds) {
     min.insert(0,2 - min.length(),'0');
     sec.insert(0,2 - sec.length(),'0');
 
-    return  "hour: "+hour +" "+ " min: "+min + " second: "+sec + "                          "; 
+    return hour +":"+min + ":"+sec; 
 }
