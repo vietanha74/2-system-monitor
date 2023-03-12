@@ -150,12 +150,12 @@ long LinuxParser::ActiveJiffies(int pid) {
 
 // TODO: Read and return the number of active jiffies for the system
 long LinuxParser::ActiveJiffies() {  
-  float kUser_time    = atof(CpuUtilization()[kUser_].c_str());
-  float kNice_time    = atof(CpuUtilization()[kNice_].c_str());
-  float kSystem_time  = atof(CpuUtilization()[kSystem_].c_str());
-  float kIRQ_time     = atof(CpuUtilization()[kIRQ_].c_str());
-  float kSoftIRQ_time = atof(CpuUtilization()[kSoftIRQ_].c_str());
-  float kSteal_time   = atof(CpuUtilization()[kSteal_].c_str());
+  long kUser_time    = atof(CpuUtilization()[kUser_].c_str());
+  long kNice_time    = atof(CpuUtilization()[kNice_].c_str());
+  long kSystem_time  = atof(CpuUtilization()[kSystem_].c_str());
+  long kIRQ_time     = atof(CpuUtilization()[kIRQ_].c_str());
+  long kSoftIRQ_time = atof(CpuUtilization()[kSoftIRQ_].c_str());
+  long kSteal_time   = atof(CpuUtilization()[kSteal_].c_str());
   return kUser_time + kNice_time + kSystem_time + kIRQ_time + kSoftIRQ_time + kSteal_time;
 }
 
