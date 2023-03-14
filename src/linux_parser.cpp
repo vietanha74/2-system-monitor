@@ -9,7 +9,6 @@ using std::stof;
 using std::string;
 using std::to_string;
 using std::vector;
-using std::all_of;
 
 template <typename T> 
 T findValueByKey(std::string const  &PathName, std::string const &keyFilter)
@@ -47,8 +46,6 @@ T getValueOfFile(std::string const  &PathName)
   }
   return Tvalue;
 }
-
-
 
 // DONE: An example of how to read data from the filesystem
 string LinuxParser::OperatingSystem() {
@@ -106,7 +103,7 @@ vector<int> LinuxParser::Pids() {
   return pids;
 }
 
-// TODO: Read and return the system memory utilization
+// Read and return the system memory utilization
 float LinuxParser::MemoryUtilization() 
 { 
   string  strMemTotal   = "MemTotal:";
@@ -122,11 +119,10 @@ float LinuxParser::MemoryUtilization()
   return (fMemTotal-fMemFree)*1.0/fMemTotal; 
 }
 
-// TODO: Read and return the number of jiffies for the system
+// Read and return the number of jiffies for the system
 long LinuxParser::Jiffies() { return ActiveJiffies() + IdleJiffies(); }
 
-// TODO: Read and return the number of active jiffies for a PID
-// REMOVE: [[maybe_unused]] once you define the function
+// Read and return the number of active jiffies for a PID
 long LinuxParser::ActiveJiffies(int pid) { 
   string strFileName;
   string line;
@@ -163,7 +159,7 @@ long LinuxParser::ActiveJiffies(int pid) {
   return long(total/ sysconf(_SC_CLK_TCK)); 
 }
 
-// TODO: Read and return the number of active jiffies for the system
+// Read and return the number of active jiffies for the system
 long LinuxParser::ActiveJiffies() {  
   long kUser_time    = atof(CpuUtilization()[kUser_].c_str());
   long kNice_time    = atof(CpuUtilization()[kNice_].c_str());
@@ -174,14 +170,14 @@ long LinuxParser::ActiveJiffies() {
   return kUser_time + kNice_time + kSystem_time + kIRQ_time + kSoftIRQ_time + kSteal_time;
 }
 
-// TODO: Read and return the number of idle jiffies for the system
+// Read and return the number of idle jiffies for the system
 long LinuxParser::IdleJiffies() { 
   float kIdle_time    = atof(CpuUtilization()[kIdle_].c_str()); 
   float kIOwait_time  = atof(CpuUtilization()[kIOwait_].c_str());
   return kIdle_time + kIOwait_time;
 }
 
-// TODO: Read and return CPU utilization
+// Read and return CPU utilization
 vector<string> LinuxParser::CpuUtilization() { 
   string strCpu;
   string strLine;
@@ -207,7 +203,7 @@ vector<string> LinuxParser::CpuUtilization() {
   return Jiffies;
 }
 
-// TODO: Read and return the total number of processes
+// Read and return the total number of processes
 int LinuxParser::TotalProcesses() { 
   string strPath;
   string strKey;
@@ -221,7 +217,7 @@ int LinuxParser::TotalProcesses() {
   return nTotalProcesses; 
 }
 
-// TODO: Read and return the number of running processes
+// Read and return the number of running processes
 int LinuxParser::RunningProcesses() { 
   string strPath;
   string strKey;
@@ -235,19 +231,22 @@ int LinuxParser::RunningProcesses() {
   return nRunningProcesses;
 }
 
-// TODO: Read and return the command associated with a process
+// Read and return the command associated with a process
 string LinuxParser::Command(int pid) { 
   string strCmdline;
   string strPath;
+  string strPostfix;
 
+  strPostfix  = "...";
   strPath     = kProcDirectory + to_string(pid) +kCmdlineFilename;
   strCmdline  = getValueOfFile<string>(strPath);
+  //Limit character
+  strCmdline  = strCmdline.substr(0,25) + strPostfix; 
 
   return strCmdline; 
 }
 
-// TODO: Read and return the memory used by a process
-// REMOVE: [[maybe_unused]] once you define the function
+// Read and return the memory used by a process
 string LinuxParser::Ram(int pid) { 
   string strCmdline;
   string strPath;
@@ -264,7 +263,8 @@ string LinuxParser::Ram(int pid) {
       std::replace(strLine.begin(),strLine.end(),':',' ');
       std::istringstream linestream(strLine);
       linestream >> strKey;
-      if(strKey == "VmRSS")
+      // VmRSS give the exact physical memory being used as a part of Physical Ram.
+      if(strKey == "VmRSS") 
       {
           linestream >> strValue;
       }
@@ -280,7 +280,7 @@ int LinuxParser::GetRam(int pid)
   return atoi(strRam.c_str());
 }
 
-
+// Read and return the Uid with a process
 string LinuxParser::Uid(int pid) { 
   string strPath;
   string strKey;
@@ -291,37 +291,41 @@ string LinuxParser::Uid(int pid) {
   return findValueByKey<string>(strPath,strKey); 
 }
 
-// TODO: Read and return the user associated with a process
-// REMOVE: [[maybe_unused]] once you define the function
+// Read and return the user associated with a process
 string LinuxParser::User(int pid) { 
   string strCmdline;
   string strCmdlineFilename;
-  string line;
-  string value;
+  string strLine;
+  string strValue;
   string key, x;
   string strUidFilename;
-  string uid,user;
+  string strUid;
+  string strUser;
+  string strPostfix;
 
   // Get UID by PID
-  uid = Uid(pid);
+  strUid = Uid(pid);
   // Get User  by UID
   strCmdlineFilename = kPasswordPath;
   std::ifstream stream2(strCmdlineFilename);
   if(stream2.is_open())
   {
-    while(getline(stream2,line))  
+    while(getline(stream2,strLine))  
     {
-      std::replace(line.begin(),line.end(),':',' ');
-      std::istringstream linestream2(line);
-      linestream2 >> key >> x >> value;
-      if(value == uid) 
+      std::replace(strLine.begin(),strLine.end(),':',' ');
+      std::istringstream linestream2(strLine);
+      linestream2 >> key >> x >> strValue;
+      if(strValue == strUid) 
       {
-        user = key;
+        strUser = key;
         break;
       }
     }  
   }
-  return user;
+  //Limit character
+  strPostfix  = "..";
+  strUser     = strUser.substr(0,8) + strPostfix; 
+  return strUser;
 }
 
 long LinuxParser::UpTime() { 
