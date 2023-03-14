@@ -274,6 +274,7 @@ string LinuxParser::Ram(int pid) {
   return strValue; 
 }
 
+// Read and return the memory used by a process
 int LinuxParser::GetRam(int pid)
 {
   string strRam = LinuxParser::Ram(pid);
@@ -328,6 +329,7 @@ string LinuxParser::User(int pid) {
   return strUser;
 }
 
+// Read and return system uptime
 long LinuxParser::UpTime() { 
   string  strPath;
   long    lUptime;
@@ -338,6 +340,7 @@ long LinuxParser::UpTime() {
   return lUptime;
 }
 
+// Read and return the UpTime with a process
 long LinuxParser::UpTime(int pid) { 
   string strFilename;
   string line;
