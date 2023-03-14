@@ -9,6 +9,7 @@ using std::stof;
 using std::string;
 using std::to_string;
 using std::vector;
+using std::all_of;
 
 template <typename T> 
 T findValueByKey(std::string const  &PathName, std::string const &keyFilter)
@@ -121,17 +122,6 @@ float LinuxParser::MemoryUtilization()
   return (fMemTotal-fMemFree)*1.0/fMemTotal; 
 }
 
-// TODO: Read and return the system uptime
-long LinuxParser::UpTime() { 
-  string  strPath;
-  long    lUptime;
-  
-  strPath   = (kProcDirectory + kUptimeFilename);
-  lUptime   = getValueOfFile<long>(strPath);
-
-  return lUptime;
-}
-
 // TODO: Read and return the number of jiffies for the system
 long LinuxParser::Jiffies() { return ActiveJiffies() + IdleJiffies(); }
 
@@ -162,13 +152,15 @@ long LinuxParser::ActiveJiffies(int pid) {
       }
     }
   }
-  utime = atof(list[13].c_str());
-  stime = atof(list[14].c_str());
-  cutime = atof(list[15].c_str());
-  cstime = atof(list[16].c_str());
+
+  utime   = std::stol(list[13].c_str());
+  stime   = std::stol(list[14].c_str());
+  cutime  = std::stol(list[15].c_str());
+  cstime  = std::stol(list[16].c_str());
+
   total = utime + stime + cutime + cstime;
 
-  return long(total/sysconf(_SC_CLK_TCK)); 
+  return long(total/ sysconf(_SC_CLK_TCK)); 
 }
 
 // TODO: Read and return the number of active jiffies for the system
@@ -282,8 +274,13 @@ string LinuxParser::Ram(int pid) {
   return strValue; 
 }
 
-// TODO: Read and return the user ID associated with a process
-// REMOVE: [[maybe_unused]] once you define the function
+int LinuxParser::GetRam(int pid)
+{
+  string strRam = LinuxParser::Ram(pid);
+  return atoi(strRam.c_str());
+}
+
+
 string LinuxParser::Uid(int pid) { 
   string strPath;
   string strKey;
@@ -327,9 +324,16 @@ string LinuxParser::User(int pid) {
   return user;
 }
 
+long LinuxParser::UpTime() { 
+  string  strPath;
+  long    lUptime;
+  
+  strPath   = (kProcDirectory + kUptimeFilename);
+  lUptime   = getValueOfFile<long>(strPath);
 
-// TODO: Read and return the uptime of a process
-// REMOVE: [[maybe_unused]] once you define the function
+  return lUptime;
+}
+
 long LinuxParser::UpTime(int pid) { 
   string strFilename;
   string line;
@@ -349,5 +353,5 @@ long LinuxParser::UpTime(int pid) {
       }
     }
   }
-  return (atof(ListProcStat[21].c_str()) / sysconf(_SC_CLK_TCK));
+  return long(std::stol(ListProcStat[21].c_str()) / sysconf(_SC_CLK_TCK));
 }

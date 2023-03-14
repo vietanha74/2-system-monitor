@@ -9,7 +9,6 @@ Processor::Processor()
     this->m_PreTotalTime    = LinuxParser::Jiffies();
 }
 
-// TODO: Return the aggregate CPU utilization
 float Processor::Utilization() { 
     float CpuUtilization;
     long const CurrentIdleTime    = LinuxParser::IdleJiffies();

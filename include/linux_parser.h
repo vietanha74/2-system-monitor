@@ -26,6 +26,7 @@ int TotalProcesses();
 int RunningProcesses();
 std::string OperatingSystem();
 std::string Kernel();
+int GetRam(int pid);
 
 // CPU
 enum CPUStates {

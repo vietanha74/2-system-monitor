@@ -17,37 +17,39 @@ Process::Process(int pid) {
     this->m_Command     = LinuxParser::Command(pid);
     this->m_User        = LinuxParser::User(pid);
     this->m_UpTime      = LinuxParser::UpTime(pid);
-    this->m_Utilization =  0;
+    this->m_Utilization =  0.0;
+    
 }
 
-// TODO: Return this process's ID
 int Process::Pid() { return this->m_PID; }
 
-// TODO: Return this process's CPU utilization
-long Process::CpuUtilization() { 
+// Calculate CpuUtilization of process by Pid
+float Process::CpuUtilization() { 
     long systemUptime       = LinuxParser::UpTime();
     long ProcesUptime       = LinuxParser::UpTime(m_PID);
     long TotalTimeActive    = LinuxParser::ActiveJiffies(m_PID);
 
-    this->m_Utilization = TotalTimeActive/(systemUptime - ProcesUptime);
+    this->m_Utilization = float(TotalTimeActive)/float(systemUptime-ProcesUptime);
 
     return this->m_Utilization; 
 }
 
-// TODO: Return the command that generated this process
+//Get Command
 string Process::Command() { return this->m_Command; }
 
-// TODO: Return this process's memory utilization
+//Get Ram
 string Process::Ram() { return this->m_RAM; }
 
-// TODO: Return the user (name) that generated this process
+//Get User
 string Process::User() { return this->m_User; }
 
-// TODO: Return the age of this process (in seconds)
+//Get Uptime
 long int Process::UpTime() { return this->m_UpTime; }
 
-// TODO: Overload the "less than" comparison operator for Process objects
-// REMOVE: [[maybe_unused]] once you define the function
+//Overload less than and greater than.
 bool Process::operator<(Process const& a) const { 
     return this->m_Utilization < a.m_Utilization;
+}
+bool Process::operator>(Process const& a) const { 
+    return this->m_Utilization > a.m_Utilization;
 }
