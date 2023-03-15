@@ -360,5 +360,5 @@ long LinuxParser::UpTime(int pid) {
       }
     }
   }
-  return long(std::stol(ListProcStat[21].c_str()) / sysconf(_SC_CLK_TCK));
+  return UpTime() - (std::stol(ListProcStat[21].c_str()) / sysconf(_SC_CLK_TCK));
 }

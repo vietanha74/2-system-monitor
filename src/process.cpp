@@ -25,11 +25,10 @@ int Process::Pid() { return this->m_PID; }
 
 // Calculate CpuUtilization of process by Pid
 float Process::CpuUtilization() { 
-    long systemUptime       = LinuxParser::UpTime();
     long ProcesUptime       = LinuxParser::UpTime(m_PID);
     long TotalTimeActive    = LinuxParser::ActiveJiffies(m_PID);
 
-    this->m_Utilization = float(TotalTimeActive)/float(systemUptime-ProcesUptime);
+    this->m_Utilization = float(TotalTimeActive)/float(ProcesUptime);
 
     return this->m_Utilization; 
 }
